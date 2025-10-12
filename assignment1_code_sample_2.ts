@@ -3,6 +3,10 @@ import * as mysql from 'mysql';
 import { exec } from 'child_process';
 import * as http from 'http';
 
+/* 
+ISSUE: The database password is hardcoded directly in the source code.
+RISK: It's an A05:2021 Security Misconfiguration risk.
+*/
 const dbConfig = {
     host: 'mydatabase.com',
     user: 'admin',
@@ -44,6 +48,7 @@ function getData(): Promise<string> {
 
 function saveToDb(data: string) {
     const connection = mysql.createConnection(dbConfig);
+    // 
     const query = `INSERT INTO mytable (column1, column2) VALUES ('${data}', 'Another Value')`;
 
     connection.connect();
