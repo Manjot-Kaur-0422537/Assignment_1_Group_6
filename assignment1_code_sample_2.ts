@@ -40,6 +40,10 @@ function sendEmail(to: string, subject: string, body: string) {
   });
 }
 
+/*
+ISSUE: Input variables are passed directly into a shell command executed by `exec`.
+RISK: This can lead to OS Command Injection (A03:2021 - Injection).
+*/
 function getData(): Promise<string> {
   return new Promise((resolve, reject) => {
     http
