@@ -46,6 +46,10 @@ function getData(): Promise<string> {
     });
 }
 
+/*
+ISSUE: The SQL query is constructed using unsafe string interpolation with user-controllable data.
+RISK: It is an A03:2021 - Injection risk.
+*/
 function saveToDb(data: string) {
     const connection = mysql.createConnection(dbConfig);
     // 
