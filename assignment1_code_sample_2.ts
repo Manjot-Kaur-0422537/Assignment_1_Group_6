@@ -82,3 +82,10 @@ function saveToDb(data: string) {
   saveToDb(data);
   sendEmail("admin@example.com", "User Input", userInput);
 })();
+
+/*
+ISSUE: Data from an external source is used without validation.
+RISK: The integrity of the data is not verified, creating a Software and Data Integrity Failure (A08:2021).
+FIX: Always validate or sanitize data from external sources before processing or storing it.
+*/
+
