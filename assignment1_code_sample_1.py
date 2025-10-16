@@ -1,11 +1,12 @@
 import os
 import pymysql
+import subprocess
 from urllib.request import urlopen
 
 db_config = {
-    'host': 'mydatabase.com',
-    'user': 'admin',
-    'password': 'secret123'
+    'host': os.getenv('DB_HOST'),
+    'user': os.getenv('DB_USER'),
+    'password': os.getenv('DB_PASSWORD')
 }
 
 def get_user_input():
@@ -13,18 +14,23 @@ def get_user_input():
     return user_input
 
 def send_email(to, subject, body):
-    os.system(f'echo {body} | mail -s "{subject}" {to}')
+    subprocess.run(['mail', '-s', subject, to], input=body, text=True)
 
 def get_data():
     url = 'http://insecure-api.com/get-data'
     data = urlopen(url).read().decode()
     return data
 
+def validate_data(data):
+    if not data or len(data) > 500:
+        raise ValueError("Invalid data received from API.")
+    return data
+    
 def save_to_db(data):
-    query = f"INSERT INTO mytable (column1, column2) VALUES ('{data}', 'Another Value')"
     connection = pymysql.connect(**db_config)
     cursor = connection.cursor()
-    cursor.execute(query)
+    query = "INSERT INTO mytable (column1, column2) VALUES (%s, %s)"
+    cursor.execute(query, (data, 'Another Value'))
     connection.commit()
     cursor.close()
     connection.close()
@@ -32,5 +38,6 @@ def save_to_db(data):
 if __name__ == '__main__':
     user_input = get_user_input()
     data = get_data()
-    save_to_db(data)
+    validated_data = validate_data(data)
+    save_to_db(validated_data)
     send_email('admin@example.com', 'User Input', user_input)
